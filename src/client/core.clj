@@ -18,4 +18,8 @@
     (extractJson
      (makeCall url))))
 
-(defn -main [] (getIt "http://localhost:9292"))
+(defn -main []
+  (loop [i 0]
+    (when (< i 100)
+      (getIt "http://localhost:9292")
+      (recur (inc i)))))
