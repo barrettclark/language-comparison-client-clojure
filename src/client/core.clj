@@ -22,25 +22,26 @@
      (println ~title "completed in" (diff-ms start#))))
 
 (defn -main []
-  (let [main-start (now) n   100
-        url "http://localhost:9292"]
-    
-    (timed-run "Serial"
-      (println (string/join "\n"
-                 (take n (repeatedly #(get-it url))))))
+  (timed-run "TOTAL"
+    (let [n 100
+          url "http://localhost:9292"]
 
-    (timed-run "Parallel"
-      (println (string/join "\n"
-                 (pmap identity (take n (repeatedly #(get-it url)))))))
+      (timed-run "Serial"
+        (println (string/join "\n"
+                   (take n (repeatedly #(get-it url))))))
 
-    (timed-run "Serial w/o print"
-      ;; clojure is lazy, so if we don't print these,
-      ;; the work may not be done; doall ensures it is
-      (doall (take n (repeatedly #(get-it url)))))
+      (timed-run "Parallel"
+        (println (string/join "\n"
+                   (pmap identity (take n (repeatedly #(get-it url)))))))
 
-    (timed-run "Parallel w/o print"
-      (doall (pmap identity (take n (repeatedly #(get-it url))))))
+      (timed-run "Serial w/o print"
+        ;; clojure is lazy, so if we don't print these,
+        ;; the work may not be done; doall ensures it is
+        (doall (take n (repeatedly #(get-it url)))))
 
-    ;;we used pmap, so background agent threads will wait
-    ;; until timeout (30s?) on exit; this terminates them now
-    (shutdown-agents)))
+      (timed-run "Parallel w/o print"
+        (doall (pmap identity (take n (repeatedly #(get-it url))))))
+
+      ;;we used pmap, so background agent threads will wait
+      ;; until timeout (30s?) on exit; this terminates them now
+      (shutdown-agents))))
